@@ -1,6 +1,8 @@
 #include <fstream>      // std::fstream
 #include <iostream>
 #include <sstream>
+#include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -66,20 +68,44 @@ Animal* animalFactory(istringstream & line) {
     throw "Error No such animal";
 }
 
+void printAnimals(const vector<Animal*> & animals) {
+    cout << "Start of Animals the vector" << endl;
+    for(Animal* a : animals) {
+      a->print();
+      cout << endl;
+    }
+    cout << "End of animals" << endl;
+}
+
+void deleteAnimals(vector<Animal*> & animals) {
+    cout << "Deleting the vector" << endl;
+    for(Animal*& a : animals) {
+        delete a;
+        a = nullptr;
+    }
+    animals.erase(remove(animals.begin(),animals.end(),nullptr),animals.end());
+}
+
+
+
 int main () {
 
   fstream fs;
   fs.open ("test.txt", fstream::in );
+  vector<Animal*> animals;
 
   string line;
   while(getline(fs,line)) {
     istringstream linestream{line};
     Animal* animal = animalFactory(linestream);
-    animal->print();
-    cout << endl;
+    animals.push_back(animal);
   }
 
   fs.close();
+
+  printAnimals(animals);
+  deleteAnimals(animals);
+  printAnimals(animals);
 
   return 0;
 }
